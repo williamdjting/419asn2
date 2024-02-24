@@ -4,7 +4,8 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, confusion_matrix, plot_precision_recall_curve, plot_roc_curve
+import matplotlib.pyplot as plt
 
 
 # Load the CSV file with semi colon delimiter
@@ -76,3 +77,20 @@ print("Random Forest Accuracy:", random_forest_accuracy)
 # approximately
 # Logistic Regression Accuracy: 0.578125
 # Random Forest Accuracy: 0.6625
+
+
+# so far the final model = random_forest_model
+
+finalModel = random_forest_model
+finalModelAccuracy = random_forest_accuracy
+
+y_pred = finalModel.predict(X_test)
+
+# baseline classifier - random forest outputs
+accuracyY = accuracy_score(y_test, y_pred)
+cm = confusion_matrix(y_test,y_pred)
+
+print(f'Accuracy: {accuracyY}')
+print('Confusion Matrix:')
+print(cm)
+# prints confusion matrix, not sure how to interpret
