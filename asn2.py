@@ -30,6 +30,8 @@ X = X.drop(columns=[dropDensityCol])
 # did not handle "outliers" as that assumes I know the relevant range or variance of the data, no data jumps out of the range excessively. Outliers can be registered by plotting later on?
 
 # Standardize each numerical features using z-score normalization
+# unsure if we should do PCA scoring to increase the accuracy score?
+
 scaler = StandardScaler()
 X[['fixed acidity']] = scaler.fit_transform(X[['fixed acidity' ]])
 X[['volatile acidity']] = scaler.fit_transform(X[['volatile acidity' ]])
@@ -77,7 +79,6 @@ print("Random Forest Accuracy:", random_forest_accuracy)
 # approximately
 # Logistic Regression Accuracy: 0.578125
 # Random Forest Accuracy: 0.6625
-
 
 # so far the final model = random_forest_model
 
