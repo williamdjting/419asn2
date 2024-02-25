@@ -4,7 +4,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, confusion_matrix, plot_precision_recall_curve, plot_roc_curve
+from sklearn.metrics import accuracy_score, confusion_matrix, precision_recall_curve
 import matplotlib.pyplot as plt
 
 
@@ -75,6 +75,29 @@ random_forest_model.fit(X_train, y_train)
 random_forest_predictions = random_forest_model.predict(X_test)
 random_forest_accuracy = accuracy_score(y_test, random_forest_predictions)
 print("Random Forest Accuracy:", random_forest_accuracy)
+
+# Plot Precision-Recall Curve for Logistic Regression
+plt.figure(figsize=(8, 6))
+for i in range(len(np.unique(y))):
+    precision, recall, _ = precision_recall_curve(y_test == i, logistic_regression_model.predict_proba(X_test)[:, i])
+    plt.plot(recall, precision, marker='.', label=f'Class {i} (Logistic Regression)')
+plt.xlabel('Recall')
+plt.ylabel('Precision')
+plt.title('Precision-Recall Curve (Logistic Regression)')
+plt.legend()
+plt.show()
+
+# Plot Precision-Recall Curve for Random Forest
+plt.figure(figsize=(8, 6))
+for i in range(len(np.unique(y))):
+    precision, recall, _ = precision_recall_curve(y_test == i, random_forest_model.predict_proba(X_test)[:, i])
+    plt.plot(recall, precision, marker='.', label=f'Class {i} (Random Forest)')
+plt.xlabel('Recall')
+plt.ylabel('Precision')
+plt.title('Precision-Recall Curve (Random Forest)')
+plt.legend()
+plt.show()
+
 
 # approximately
 # Logistic Regression Accuracy: 0.578125
