@@ -58,7 +58,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 # from dataset: "These datasets can be viewed as classification or regression tasks.  The classes are ordered and not balanced (e.g. there are many more normal wines than excellent or poor ones)."
 
 # train logistic regression model
-logistic_regression_model = LogisticRegression(max_iter=100)
+logistic_regression_model = LogisticRegression(max_iter=50)
 logistic_regression_model.fit(X_train, y_train)
 
 # valuate logistic regression model
@@ -68,7 +68,7 @@ print("Logistic Regression Accuracy:", logistic_regression_accuracy)
 
 
 # train random forest classifier
-random_forest_model = RandomForestClassifier(n_estimators=100, random_state=42)
+random_forest_model = RandomForestClassifier(n_estimators=50, random_state=42)
 random_forest_model.fit(X_train, y_train)
 
 # evaluate random forest classifier
