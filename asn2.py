@@ -1,11 +1,17 @@
 import numpy as np
 import pandas as pd
+from numpy import mean
+from numpy import absolute
+from numpy import sqrt
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, confusion_matrix, precision_recall_curve
 import matplotlib.pyplot as plt
+from sklearn.model_selection import LeaveOneOut
+from sklearn.model_selection import cross_val_score
+
 
 
 # Load the CSV file with semi colon delimiter
@@ -77,26 +83,26 @@ random_forest_accuracy = accuracy_score(y_test, random_forest_predictions)
 print("Random Forest Accuracy:", random_forest_accuracy)
 
 # Plot Precision-Recall Curve for Logistic Regression
-plt.figure(figsize=(8, 6))
-for i in range(len(np.unique(y))):
-    precision, recall, _ = precision_recall_curve(y_test == i, logistic_regression_model.predict_proba(X_test)[:, i])
-    plt.plot(recall, precision, marker='.', label=f'Class {i} (Logistic Regression)')
-plt.xlabel('Recall')
-plt.ylabel('Precision')
-plt.title('Precision-Recall Curve (Logistic Regression)')
-plt.legend()
-plt.show()
+# plt.figure(figsize=(8, 6))
+# for i in range(len(np.unique(y))):
+#     precision, recall, _ = precision_recall_curve(y_test == i, logistic_regression_model.predict_proba(X_test)[:, i])
+#     plt.plot(recall, precision, marker='.', label=f'Class {i} (Logistic Regression)')
+# plt.xlabel('Recall')
+# plt.ylabel('Precision')
+# plt.title('Precision-Recall Curve (Logistic Regression)')
+# plt.legend()
+# plt.show()
 
 # Plot Precision-Recall Curve for Random Forest
-plt.figure(figsize=(8, 6))
-for i in range(len(np.unique(y))):
-    precision, recall, _ = precision_recall_curve(y_test == i, random_forest_model.predict_proba(X_test)[:, i])
-    plt.plot(recall, precision, marker='.', label=f'Class {i} (Random Forest)')
-plt.xlabel('Recall')
-plt.ylabel('Precision')
-plt.title('Precision-Recall Curve (Random Forest)')
-plt.legend()
-plt.show()
+# plt.figure(figsize=(8, 6))
+# for i in range(len(np.unique(y))):
+#     precision, recall, _ = precision_recall_curve(y_test == i, random_forest_model.predict_proba(X_test)[:, i])
+#     plt.plot(recall, precision, marker='.', label=f'Class {i} (Random Forest)')
+# plt.xlabel('Recall')
+# plt.ylabel('Precision')
+# plt.title('Precision-Recall Curve (Random Forest)')
+# plt.legend()
+# plt.show()
 
 
 # approximately
@@ -118,3 +124,62 @@ print(f'Accuracy: {accuracyY}')
 print('Confusion Matrix:')
 print(cm)
 # prints confusion matrix, not sure how to interpret
+
+
+# part 2
+# slice to first 10 rows of the dataset
+part2data = df.sample(frac=0.1, random_state=42).reset_index(drop=True)  # Reset index after sampling
+
+# cleaning
+X2 = part2data.iloc[:, :-1]  # Features = everything but last column
+y2 = part2data.iloc[:, -1]   # Labels = last column, i.e. quality of red wine
+
+dropDensityCol = 'density'
+X2 = X2.drop(columns=[dropDensityCol])
+
+scaler = StandardScaler()
+X2[['fixed acidity']] = scaler.fit_transform(X2[['fixed acidity' ]])
+X2[['volatile acidity']] = scaler.fit_transform(X2[['volatile acidity' ]])
+X2[['citric acid']] = scaler.fit_transform(X2[['citric acid' ]])
+X2[['residual sugar']] = scaler.fit_transform(X2[['residual sugar' ]])
+X2[['chlorides']] = scaler.fit_transform(X2[['chlorides' ]])
+X2[['free sulfur dioxide']] = scaler.fit_transform(X2[['free sulfur dioxide' ]])
+X2[['total sulfur dioxide']] = scaler.fit_transform(X2[['total sulfur dioxide' ]])
+X2[['sulphates']] = scaler.fit_transform(X2[['sulphates' ]])
+X2[['total sulfur dioxide']] = scaler.fit_transform(X2[['total sulfur dioxide' ]])
+X2[['alcohol']] = scaler.fit_transform(X2[['alcohol' ]])
+
+# used below algorithm with slight modifications from this source: https://machinelearningmastery.com/loocv-for-evaluating-machine-learning-algorithms/
+cv = LeaveOneOut()
+
+# enumerate splits
+y_true, y_pred = list(), list()
+part2array = []
+for i in range(10):
+  # leave out one data point at a time
+  X_train = X2.drop(index=i)
+
+  y_train = y2.drop(index=i)
+    
+  # fit model
+  part2model = RandomForestClassifier(random_state=42)
+  part2model.fit(X_train, y_train)
+    
+  # evaluate model on left-out data point and calculate the scoring
+  y_true = y2[i:i+1]
+  y_pred = part2model.predict(X2[i:i+1])
+    
+  acc = accuracy_score(y_true, y_pred)
+  print('Accuracy for iteration {}: {:.3f}'.format(i+1, acc))
+  
+  part2array.append(acc)
+
+average_accuracy = sum(part2array) / len(part2array)
+print("Average Accuracy Score:", average_accuracy)
+
+
+# this is another method using cross_val_score but it generates "Part 2 Accuracy: [1. 1. 1. 0. 1. 1. 1. 0. 0. 1.]" which is not right
+part2Model = random_forest_model
+# for i in range(10):
+scores = cross_val_score(part2Model, X2, y2, scoring="accuracy", cv=cv, n_jobs=-1)
+print('Part 2 Accuracy:', scores)
