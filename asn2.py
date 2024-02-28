@@ -126,11 +126,12 @@ print(cm)
 
 
 # part 2
-# slice to first 10 rows of the dataset
+# dataset shrink to 10% for comput reasons
 part2data = df.sample(frac=0.1, random_state=42).reset_index(drop=True)  # Reset index after sampling
 
+# iterate 10 times for 10 LOO iterations
 for i in range(10):
-      
+  # for each iteration, we randomly remove a row from the dataset and then drop it not in place, then the model is trained and tested with this row removed    
   random_index = np.random.randint(0, len(part2data))
   new_part2data = part2data.drop(random_index, inplace=False)
   # cleaning
@@ -152,7 +153,7 @@ for i in range(10):
   X2[['total sulfur dioxide']] = scaler.fit_transform(X2[['total sulfur dioxide' ]])
   X2[['alcohol']] = scaler.fit_transform(X2[['alcohol' ]])
 
-  # used below algorithm with slight modifications from this source: https://machinelearningmastery.com/loocv-for-evaluating-machine-learning-algorithms/
+  # used algorithm with slight modifications from this source: https://machinelearningmastery.com/loocv-for-evaluating-machine-learning-algorithms/
   cv = LeaveOneOut()
 
   # enumerate splits
