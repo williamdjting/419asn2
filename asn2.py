@@ -1,8 +1,5 @@
 import numpy as np
 import pandas as pd
-from numpy import mean
-from numpy import absolute
-from numpy import sqrt
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
@@ -11,7 +8,9 @@ from sklearn.metrics import accuracy_score, confusion_matrix, precision_recall_c
 import matplotlib.pyplot as plt
 from sklearn.model_selection import LeaveOneOut
 from sklearn.model_selection import cross_val_score
-
+from numpy import mean
+from numpy import absolute
+from numpy import sqrt
 
 
 # Load the CSV file with semi colon delimiter
@@ -154,32 +153,56 @@ cv = LeaveOneOut()
 
 # enumerate splits
 y_true, y_pred = list(), list()
+# Enumerate splits
 part2array = []
-for i in range(10):
-  # leave out one data point at a time
-  X_train = X2.drop(index=i)
+# for i in range(10):
+for train_ix, test_ix in cv.split(X2):
+      # Extract training and test data based on indices
+      X_train, X_test = X2.iloc[train_ix], X2.iloc[test_ix]
+      y_train, y_test = y2.iloc[train_ix], y2.iloc[test_ix]
+      
+      # Fit model
+      model = RandomForestClassifier(random_state=42)
+      model.fit(X_train, y_train)
+      
+      # Evaluate model
+      yhat = model.predict(X_test)
+      
+      # Store true and predicted values
+      y_true.append(y_test.iloc[0])  # Assuming y_test is a Series
+      y_pred.append(yhat[0])
 
-  y_train = y2.drop(index=i)
-    
-  # fit model
-  part2model = RandomForestClassifier(random_state=42)
-  part2model.fit(X_train, y_train)
-    
-  # evaluate model on left-out data point and calculate the scoring
-  y_true = y2[i:i+1]
-  y_pred = part2model.predict(X2[i:i+1])
-    
-  acc = accuracy_score(y_true, y_pred)
-  print('Accuracy for iteration {}: {:.3f}'.format(i+1, acc))
-  
-  part2array.append(acc)
+  # calculate accuracy 
+acc = accuracy_score(y_true, y_pred)
+print('Accuracy: %.3f' % acc)
+part2array.append(acc)
 
-average_accuracy = sum(part2array) / len(part2array)
-print("Average Accuracy Score:", average_accuracy)
+  # Leave out one data point at a time
+#   X_train = X2.drop(index=i)
+
+#   y_train = y2.drop(index=i)
+    
+#   # Fit model
+#   model = RandomForestClassifier(random_state=42)
+#   model.fit(X_train, y_train)
+    
+#   # Evaluate model on left-out data point
+#   y_true = y2[i:i+1]
+#   y_pred = model.predict(X2[i:i+1])
+    
+#   # Calculate accuracy for this iteration
+#   acc = accuracy_score(y_true, y_pred)
+#   print('Accuracy for iteration {}: {:.3f}'.format(i+1, acc))
+    
+#   # Store accuracy for this iteration
+#   part2array.append(acc)
+
+# average_accuracy = sum(part2array) / len(part2array)
+# print("Average Accuracy Score:", average_accuracy)
 
 
 # this is another method using cross_val_score but it generates "Part 2 Accuracy: [1. 1. 1. 0. 1. 1. 1. 0. 0. 1.]" which is not right
-part2Model = random_forest_model
-# for i in range(10):
-scores = cross_val_score(part2Model, X2, y2, scoring="accuracy", cv=cv, n_jobs=-1)
-print('Part 2 Accuracy:', scores)
+# part2Model = random_forest_model
+# # for i in range(10):
+# scores = cross_val_score(part2Model, X2, y2, scoring="accuracy", cv=cv, n_jobs=-1)
+# print('Part 2 Accuracy:', scores)
