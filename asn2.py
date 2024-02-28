@@ -177,6 +177,14 @@ acc = accuracy_score(y_true, y_pred)
 print('Accuracy: %.3f' % acc)
 part2array.append(acc)
 
+
+
+
+
+
+
+
+
   # Leave out one data point at a time
 #   X_train = X2.drop(index=i)
 
