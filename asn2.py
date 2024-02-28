@@ -129,88 +129,53 @@ print(cm)
 # slice to first 10 rows of the dataset
 part2data = df.sample(frac=0.1, random_state=42).reset_index(drop=True)  # Reset index after sampling
 
-# cleaning
-X2 = part2data.iloc[:, :-1]  # Features = everything but last column
-y2 = part2data.iloc[:, -1]   # Labels = last column, i.e. quality of red wine
-
-dropDensityCol = 'density'
-X2 = X2.drop(columns=[dropDensityCol])
-
-scaler = StandardScaler()
-X2[['fixed acidity']] = scaler.fit_transform(X2[['fixed acidity' ]])
-X2[['volatile acidity']] = scaler.fit_transform(X2[['volatile acidity' ]])
-X2[['citric acid']] = scaler.fit_transform(X2[['citric acid' ]])
-X2[['residual sugar']] = scaler.fit_transform(X2[['residual sugar' ]])
-X2[['chlorides']] = scaler.fit_transform(X2[['chlorides' ]])
-X2[['free sulfur dioxide']] = scaler.fit_transform(X2[['free sulfur dioxide' ]])
-X2[['total sulfur dioxide']] = scaler.fit_transform(X2[['total sulfur dioxide' ]])
-X2[['sulphates']] = scaler.fit_transform(X2[['sulphates' ]])
-X2[['total sulfur dioxide']] = scaler.fit_transform(X2[['total sulfur dioxide' ]])
-X2[['alcohol']] = scaler.fit_transform(X2[['alcohol' ]])
-
-# used below algorithm with slight modifications from this source: https://machinelearningmastery.com/loocv-for-evaluating-machine-learning-algorithms/
-cv = LeaveOneOut()
-
-# enumerate splits
-y_true, y_pred = list(), list()
-# Enumerate splits
-part2array = []
-# for i in range(10):
-for train_ix, test_ix in cv.split(X2):
-      # Extract training and test data based on indices
-      X_train, X_test = X2.iloc[train_ix], X2.iloc[test_ix]
-      y_train, y_test = y2.iloc[train_ix], y2.iloc[test_ix]
+for i in range(10):
       
-      # Fit model
-      model = RandomForestClassifier(random_state=42)
-      model.fit(X_train, y_train)
-      
-      # Evaluate model
-      yhat = model.predict(X_test)
-      
-      # Store true and predicted values
-      y_true.append(y_test.iloc[0])  # Assuming y_test is a Series
-      y_pred.append(yhat[0])
+  random_index = np.random.randint(0, len(part2data))
+  new_part2data = part2data.drop(random_index, inplace=False)
+  # cleaning
+  X2 = new_part2data.iloc[:, :-1]  # Features = everything but last column
+  y2 = new_part2data.iloc[:, -1]   # Labels = last column, i.e. quality of red wine
 
-  # calculate accuracy 
-acc = accuracy_score(y_true, y_pred)
-print('Accuracy: %.3f' % acc)
-part2array.append(acc)
+  dropDensityCol = 'density'
+  X2 = X2.drop(columns=[dropDensityCol])
 
+  scaler = StandardScaler()
+  X2[['fixed acidity']] = scaler.fit_transform(X2[['fixed acidity' ]])
+  X2[['volatile acidity']] = scaler.fit_transform(X2[['volatile acidity' ]])
+  X2[['citric acid']] = scaler.fit_transform(X2[['citric acid' ]])
+  X2[['residual sugar']] = scaler.fit_transform(X2[['residual sugar' ]])
+  X2[['chlorides']] = scaler.fit_transform(X2[['chlorides' ]])
+  X2[['free sulfur dioxide']] = scaler.fit_transform(X2[['free sulfur dioxide' ]])
+  X2[['total sulfur dioxide']] = scaler.fit_transform(X2[['total sulfur dioxide' ]])
+  X2[['sulphates']] = scaler.fit_transform(X2[['sulphates' ]])
+  X2[['total sulfur dioxide']] = scaler.fit_transform(X2[['total sulfur dioxide' ]])
+  X2[['alcohol']] = scaler.fit_transform(X2[['alcohol' ]])
 
+  # used below algorithm with slight modifications from this source: https://machinelearningmastery.com/loocv-for-evaluating-machine-learning-algorithms/
+  cv = LeaveOneOut()
 
+  # enumerate splits
+  y_true, y_pred = list(), list()
+  # Enumerate splits
 
+  # for i in range(10):
+  for train_ix, test_ix in cv.split(X2):
+        # Extract training and test data based on indices
+        X_train, X_test = X2.iloc[train_ix], X2.iloc[test_ix]
+        y_train, y_test = y2.iloc[train_ix], y2.iloc[test_ix]
+        
+        # Fit model
+        model = RandomForestClassifier(random_state=42)
+        model.fit(X_train, y_train)
+        
+        # Evaluate model
+        yhat = model.predict(X_test)
+        
+        # Store true and predicted values
+        y_true.append(y_test.iloc[0])  # Assuming y_test is a Series
+        y_pred.append(yhat[0])
 
-
-
-
-
-  # Leave out one data point at a time
-#   X_train = X2.drop(index=i)
-
-#   y_train = y2.drop(index=i)
-    
-#   # Fit model
-#   model = RandomForestClassifier(random_state=42)
-#   model.fit(X_train, y_train)
-    
-#   # Evaluate model on left-out data point
-#   y_true = y2[i:i+1]
-#   y_pred = model.predict(X2[i:i+1])
-    
-#   # Calculate accuracy for this iteration
-#   acc = accuracy_score(y_true, y_pred)
-#   print('Accuracy for iteration {}: {:.3f}'.format(i+1, acc))
-    
-#   # Store accuracy for this iteration
-#   part2array.append(acc)
-
-# average_accuracy = sum(part2array) / len(part2array)
-# print("Average Accuracy Score:", average_accuracy)
-
-
-# this is another method using cross_val_score but it generates "Part 2 Accuracy: [1. 1. 1. 0. 1. 1. 1. 0. 0. 1.]" which is not right
-# part2Model = random_forest_model
-# # for i in range(10):
-# scores = cross_val_score(part2Model, X2, y2, scoring="accuracy", cv=cv, n_jobs=-1)
-# print('Part 2 Accuracy:', scores)
+    # calculate accuracy 
+  acc = accuracy_score(y_true, y_pred)
+  print('Accuracy: %.3f' % acc)
