@@ -333,7 +333,7 @@ plt.show()
 # Part 4
 # Function to compute Shapley values for a single observation
 
-#BELOW IS FAKE DATA
+#BELOW IS PASSING FAKE DATA AS WE ATTEMPT TO DEBUG THE ISSUE
 # def compute_shapley_value_single(observation, model, X_train, y_train, n_permutations=10):
 #     shapley_values = np.zeros(len(observation))
     
