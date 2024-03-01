@@ -12,8 +12,7 @@ from numpy import mean
 from numpy import absolute
 from numpy import sqrt
 from itertools import permutations
-import warnings
-warnings.filterwarnings("ignore", message="X does not have valid feature names, but RandomForestClassifier was fitted with feature names")
+
 
 
 # Load the CSV file with semi colon delimiter
