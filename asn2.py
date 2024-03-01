@@ -11,6 +11,7 @@ from sklearn.model_selection import cross_val_score
 from numpy import mean
 from numpy import absolute
 from numpy import sqrt
+from itertools import permutations
 
 
 # Load the CSV file with semi colon delimiter
@@ -255,5 +256,56 @@ plt.xlabel('Group Size')
 plt.ylabel('Influence (Accuracy Drop)')
 plt.title('Group Size vs. Influence on Model Performance')
 plt.legend()
+plt.grid(True)
+plt.show()
+
+# Part 4
+# Function to compute Shapley values for a single observation
+def compute_shapley_value_single(observation, model, X_train, y_train, n_permutations=10):
+    shapley_values = np.zeros(len(observation))
+    
+    # Create permutations of feature indices
+    feature_indices = np.arange(len(observation))
+    perms = permutations(feature_indices)
+    
+    # Compute marginal contribution for each permutation
+    for perm in perms:
+        marginal_contributions = []
+        for i in range(1, len(perm) + 1):
+            subset = perm[:i]
+            obs_subset = observation.copy()
+            obs_subset[subset] = 0 
+            pred_subset = model.predict_proba([obs_subset])[0]
+            pred = model.predict_proba([observation])[0]
+            marginal_contribution = np.abs(pred_subset - pred)
+            max_marginal_contribution = np.max(marginal_contribution)
+            marginal_contributions.append(max_marginal_contribution)
+
+        shapley_value = np.mean(marginal_contributions)
+
+        for idx in perm:
+            shapley_values[idx] += shapley_value
+    
+    shapley_values /= n_permutations
+    
+    return shapley_values
+
+# Function to compute Shapley values for all observations in the training data
+def compute_shapley_values(X_train, model, n_permutations=10):
+    shapley_values_all = []
+    for i in range(len(X_train)):
+        observation = X_train.iloc[i]
+        shapley_values = compute_shapley_value_single(observation, model, X_train, y_train, n_permutations)
+        shapley_values_all.append(shapley_values)
+    return np.array(shapley_values_all)
+
+shapley_values_rf = compute_shapley_values(X_train, random_forest_model)
+
+# Plot the distribution of Shapley values
+plt.figure(figsize=(10, 6))
+plt.hist(shapley_values_rf.flatten(), bins=20, color='skyblue', edgecolor='black')
+plt.xlabel('Shapley Value')
+plt.ylabel('Frequency')
+plt.title('Distribution of Shapley Values (Random Forest)')
 plt.grid(True)
 plt.show()
