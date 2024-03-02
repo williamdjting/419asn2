@@ -117,7 +117,6 @@ print("Logistic Regression Accuracy:", logistic_regression_accuracy)
 
 # train random forest classifier
 random_forest_model = RandomForestClassifier(n_estimators=50, random_state=42)
-# print("line 119", X_train.shape)
 random_forest_model.fit(X_train, y_train)
 
 num_features_x_train = X_train.shape
@@ -143,29 +142,27 @@ random_forest_predictions = random_forest_model.predict(X_test)
 random_forest_accuracy = accuracy_score(y_test, random_forest_predictions)
 print("Random Forest Accuracy:", random_forest_accuracy)
 
-
-
 # Plot Precision-Recall Curve for Logistic Regression
-# plt.figure(figsize=(8, 6))
-# for i in range(len(np.unique(y))):
-#     precision, recall, _ = precision_recall_curve(y_test == i, logistic_regression_model.predict_proba(X_test)[:, i])
-#     plt.plot(recall, precision, marker='.', label=f'Class {i} (Logistic Regression)')
-# plt.xlabel('Recall')
-# plt.ylabel('Precision')
-# plt.title('Precision-Recall Curve (Logistic Regression)')
-# plt.legend()
-# plt.show()
+plt.figure(figsize=(8, 6))
+for i in range(len(np.unique(y))):
+    precision, recall, _ = precision_recall_curve(y_test == i, logistic_regression_model.predict_proba(X_test)[:, i])
+    plt.plot(recall, precision, marker='.', label=f'Class {i} (Logistic Regression)')
+plt.xlabel('Recall')
+plt.ylabel('Precision')
+plt.title('Precision-Recall Curve (Logistic Regression)')
+plt.legend()
+plt.show()
 
 # Plot Precision-Recall Curve for Random Forest
-# plt.figure(figsize=(8, 6))
-# for i in range(len(np.unique(y))):
-#     precision, recall, _ = precision_recall_curve(y_test == i, random_forest_model.predict_proba(X_test)[:, i])
-#     plt.plot(recall, precision, marker='.', label=f'Class {i} (Random Forest)')
-# plt.xlabel('Recall')
-# plt.ylabel('Precision')
-# plt.title('Precision-Recall Curve (Random Forest)')
-# plt.legend()
-# plt.show()
+plt.figure(figsize=(8, 6))
+for i in range(len(np.unique(y))):
+    precision, recall, _ = precision_recall_curve(y_test == i, random_forest_model.predict_proba(X_test)[:, i])
+    plt.plot(recall, precision, marker='.', label=f'Class {i} (Random Forest)')
+plt.xlabel('Recall')
+plt.ylabel('Precision')
+plt.title('Precision-Recall Curve (Random Forest)')
+plt.legend()
+plt.show()
 
 
 # approximately
@@ -186,66 +183,62 @@ cm = confusion_matrix(y_test,y_pred)
 print(f'Accuracy: {accuracyY}')
 print('Confusion Matrix:')
 print(cm)
-# prints confusion matrix, not sure how to interpret
-
 
 # part 2
 # dataset shrink to 10% for comput reasons
-# part2data = df.sample(frac=0.1, random_state=42).reset_index(drop=True)  # Reset index after sampling
+part2data = df.sample(frac=0.1, random_state=42).reset_index(drop=True)  # Reset index after sampling
 
-# # iterate 10 times for 10 LOO iterations
-# for i in range(10):
-#   # for each iteration, we randomly remove a row from the dataset and then drop it not in place, then the model is trained and tested with this row removed    
-#   random_index = np.random.randint(0, len(part2data))
-#   new_part2data = part2data.drop(random_index, inplace=False)
-#   # cleaning
-#   X2 = new_part2data.iloc[:, :-1]  # Features = everything but last column
-#   y2 = new_part2data.iloc[:, -1]   # Labels = last column, i.e. quality of red wine
+# iterate 10 times for 10 LOO iterations
+for i in range(10):
+  # for each iteration, we randomly remove a row from the dataset and then drop it not in place, then the model is trained and tested with this row removed    
+  random_index = np.random.randint(0, len(part2data))
+  new_part2data = part2data.drop(random_index, inplace=False)
+  # cleaning
+  X2 = new_part2data.iloc[:, :-1]  # Features = everything but last column
+  y2 = new_part2data.iloc[:, -1]   # Labels = last column, i.e. quality of red wine
 
-#   dropDensityCol = 'density'
-#   X2 = X2.drop(columns=[dropDensityCol])
+  dropDensityCol = 'density'
+  X2 = X2.drop(columns=[dropDensityCol])
 
-#   scaler = StandardScaler()
-#   X2[['fixed acidity']] = scaler.fit_transform(X2[['fixed acidity' ]])
-#   X2[['volatile acidity']] = scaler.fit_transform(X2[['volatile acidity' ]])
-#   X2[['citric acid']] = scaler.fit_transform(X2[['citric acid' ]])
-#   X2[['residual sugar']] = scaler.fit_transform(X2[['residual sugar' ]])
-#   X2[['chlorides']] = scaler.fit_transform(X2[['chlorides' ]])
-#   X2[['free sulfur dioxide']] = scaler.fit_transform(X2[['free sulfur dioxide' ]])
-#   X2[['total sulfur dioxide']] = scaler.fit_transform(X2[['total sulfur dioxide' ]])
-#   X2[['sulphates']] = scaler.fit_transform(X2[['sulphates' ]])
-#   X2[['total sulfur dioxide']] = scaler.fit_transform(X2[['total sulfur dioxide' ]])
-#   X2[['alcohol']] = scaler.fit_transform(X2[['alcohol' ]])
+  scaler = StandardScaler()
+  X2[['fixed acidity']] = scaler.fit_transform(X2[['fixed acidity' ]])
+  X2[['volatile acidity']] = scaler.fit_transform(X2[['volatile acidity' ]])
+  X2[['citric acid']] = scaler.fit_transform(X2[['citric acid' ]])
+  X2[['residual sugar']] = scaler.fit_transform(X2[['residual sugar' ]])
+  X2[['chlorides']] = scaler.fit_transform(X2[['chlorides' ]])
+  X2[['free sulfur dioxide']] = scaler.fit_transform(X2[['free sulfur dioxide' ]])
+  X2[['total sulfur dioxide']] = scaler.fit_transform(X2[['total sulfur dioxide' ]])
+  X2[['sulphates']] = scaler.fit_transform(X2[['sulphates' ]])
+  X2[['total sulfur dioxide']] = scaler.fit_transform(X2[['total sulfur dioxide' ]])
+  X2[['alcohol']] = scaler.fit_transform(X2[['alcohol' ]])
 
-#   # used algorithm with slight modifications from this source: https://machinelearningmastery.com/loocv-for-evaluating-machine-learning-algorithms/
-#   cv = LeaveOneOut()
+  # used algorithm with slight modifications from this source: https://machinelearningmastery.com/loocv-for-evaluating-machine-learning-algorithms/
+  cv = LeaveOneOut()
 
-#   # enumerate splits
-#   y_true, y_pred = list(), list()
-#   # Enumerate splits
+  # enumerate splits
+  y_true, y_pred = list(), list()
+  # Enumerate splits
 
-#   # for i in range(10):
-#   for train_ix, test_ix in cv.split(X2):
-#         # Extract training and test data based on indices
-#         X_train, X_test = X2.iloc[train_ix], X2.iloc[test_ix]
-#         y_train, y_test = y2.iloc[train_ix], y2.iloc[test_ix]
+  # for i in range(10):
+  for train_ix, test_ix in cv.split(X2):
+        # Extract training and test data based on indices
+        X_train, X_test = X2.iloc[train_ix], X2.iloc[test_ix]
+        y_train, y_test = y2.iloc[train_ix], y2.iloc[test_ix]
         
-#         # Fit model
-#         model = RandomForestClassifier(random_state=42)
-#         model.fit(X_train, y_train)
+        # Fit model
+        model = RandomForestClassifier(random_state=42)
+        model.fit(X_train, y_train)
         
-#         # Evaluate model
-#         yhat = model.predict(X_test)
+        # Evaluate model
+        yhat = model.predict(X_test)
         
-#         # Store true and predicted values
-#         y_true.append(y_test.iloc[0])  # Assuming y_test is a Series
-#         y_pred.append(yhat[0])
+        # Store true and predicted values
+        y_true.append(y_test.iloc[0])  # Assuming y_test is a Series
+        y_pred.append(yhat[0])
 
-#     # calculate accuracy 
-#   acc = accuracy_score(y_true, y_pred)
-#   print('Accuracy: %.3f' % acc)
-
-# yFake = np.zeros(320,10)
+    # calculate accuracy 
+  acc = accuracy_score(y_true, y_pred)
+  print('Accuracy: %.3f' % acc)
 
 # Part 3
 def leave_group_out_influence(X_train, y_train, X_test, y_test, model):
@@ -331,39 +324,6 @@ plt.show()
 
 # Part 4
 # Function to compute Shapley values for a single observation
-
-#BELOW IS PASSING FAKE DATA AS WE ATTEMPT TO DEBUG THE ISSUE
-# def compute_shapley_value_single(observation, model, X_train, y_train, n_permutations=10):
-#     shapley_values = np.zeros(len(observation))
-    
-#     # Create permutations of feature indices
-#     feature_indices = np.arange(len(observation))
-#     perms = permutations(feature_indices)
-    
-#     # Compute marginal contribution for each permutation
-#     for perm in perms:
-#         marginal_contributions = []
-#         for i in range(0, len(perm)):
-#             subset = perm[:i]
-#             obs_subset = np.ones(len(observation))  # Initialize with 1s instead of 0s
-#             obs_subset[subset] = observation[subset]  # Update obs_subset with non-zero values for relevant features
-            
-#             pred_subset = model.predict_proba([obs_subset])[0]
-#             pred = model.predict_proba([observation])[0]
-#             marginal_contribution = np.abs(pred_subset - pred)
-#             max_marginal_contribution = np.max(marginal_contribution)
-#             marginal_contributions.append(max_marginal_contribution)
-
-#         shapley_value = np.mean(marginal_contributions)
-
-#         for idx in perm:
-#             shapley_values[idx] += shapley_value
-    
-#     shapley_values /= n_permutations
-    
-#     return shapley_values
-
-
 def compute_shapley_value_single(observation, model, X_train, y_train, n_permutations=10):
     shapley_values = np.zeros(len(observation))
     
