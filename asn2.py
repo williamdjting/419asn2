@@ -6,14 +6,13 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, confusion_matrix, precision_recall_curve
 import matplotlib.pyplot as plt
+import itertools
 from sklearn.model_selection import LeaveOneOut
 from sklearn.model_selection import cross_val_score
 from numpy import mean
 from numpy import absolute
 from numpy import sqrt
 from itertools import permutations
-
-
 
 # Load the CSV file with semi colon delimiter
 df = pd.read_csv('wine+quality/winequality-red.csv', delimiter=';')
@@ -23,40 +22,13 @@ print(df.head())
 X = df.iloc[:, :-1]  # Features = everything but last column
 y = df.iloc[:, -1]   # Labels = last column, i.e. quality of red wine
 
-# missing_values = df.isnull().sum()
-# no missing values
-
-# duplicate_rows = df[df.duplicated()]
-
-#there are duplicate rows but it is duplicates of some features, not the entire row i believe
-
-num_features = X.shape
-
-# Counting the number of labels in y
-num_labels = len(y)
-
-print("Number of features in X:", num_features)
-print("Number of labels in y:", num_labels)
-
-
 # Drop density as the variance between rows is neglient
-dropDensityCol = "density"
+dropDensityCol = 'density'
 X = X.drop(columns=[dropDensityCol])
-# X = X.drop(columns=[dropDensityCol]).reset_index(drop=True)
-
-num_features = X.shape
-
-# Counting the number of labels in y
-num_labels = len(y)
-
-print("Number of features in X:", num_features)
-print("Number of labels in y:", num_labels)
 
 # did not handle "outliers" as that assumes I know the relevant range or variance of the data, no data jumps out of the range excessively. Outliers can be registered by plotting later on?
 
 # Standardize each numerical features using z-score normalization
-# unsure if we should do PCA scoring to increase the accuracy score?
-
 scaler = StandardScaler()
 X[['fixed acidity']] = scaler.fit_transform(X[['fixed acidity' ]])
 X[['volatile acidity']] = scaler.fit_transform(X[['volatile acidity' ]])
@@ -70,14 +42,6 @@ X[['total sulfur dioxide']] = scaler.fit_transform(X[['total sulfur dioxide' ]])
 X[['alcohol']] = scaler.fit_transform(X[['alcohol' ]])
 
 
-num_features = X.shape[1]
-
-# Counting the number of labels in y
-num_labels = len(y)
-
-print("Number of features in X:", num_features)
-print("Number of labels in y:", num_labels)
-
 # did not correct for errors or inconsistencies as that requires domain knowledge of what data points aren't right, plotting or modelling the data may help here.
 
 print("cleaned dataset")
@@ -87,20 +51,6 @@ print(X.head())
 # random 80/20 split is chosen as its typical
 # random state 42 is chosen as its typical
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-
-num_features_x_train = X_train.shape[1]
-num_features_x_test = X_test.shape[1]
-
-# Counting the number of labels in y
-num_labels_ytrain = len(y_train)
-num_labels_ytest = len(y_test)
-
-print("Number of features in num_features_x_train:", num_features_x_train)
-print("Number of features in num_features_x_test:", num_features_x_test)
-print("Number of labels in ytrain:", num_labels_ytrain)
-print("Number of labels in ytest:", num_labels_ytest)
-
 
 # from dataset: "These datasets can be viewed as classification or regression tasks.  The classes are ordered and not balanced (e.g. there are many more normal wines than excellent or poor ones)."
 
@@ -114,30 +64,11 @@ logistic_regression_accuracy = accuracy_score(y_test, logistic_regression_predic
 print("Logistic Regression Accuracy:", logistic_regression_accuracy)
 
 
-
 # train random forest classifier
 random_forest_model = RandomForestClassifier(n_estimators=50, random_state=42)
 random_forest_model.fit(X_train, y_train)
 
-num_features_x_train = X_train.shape
-num_features_x_test = X_test.shape
-
-# Counting the number of labels in y
-num_labels_ytrain = len(y_train)
-num_labels_ytrain2 = y_train.shape
-num_labels_ytest = len(y_test)
-num_labels_ytest2 = y_test.shape
-
-print("Number of features in num_features_x_train:", num_features_x_train)
-print("Number of features in num_features_x_test:", num_features_x_test)
-
-print("xtest shape", X_test.shape)
-print("ytest", num_labels_ytest2)
-print("ytrain", num_labels_ytrain2)
-
-
 # evaluate random forest classifier
-print("line 140", X_test.shape)
 random_forest_predictions = random_forest_model.predict(X_test)
 random_forest_accuracy = accuracy_score(y_test, random_forest_predictions)
 print("Random Forest Accuracy:", random_forest_accuracy)
@@ -163,7 +94,6 @@ plt.ylabel('Precision')
 plt.title('Precision-Recall Curve (Random Forest)')
 plt.legend()
 plt.show()
-
 
 # approximately
 # Logistic Regression Accuracy: 0.578125
@@ -217,28 +147,26 @@ for i in range(10):
 
   # enumerate splits
   y_true, y_pred = list(), list()
-  # Enumerate splits
 
-  # for i in range(10):
-  for train_ix, test_ix in cv.split(X2):
-        # Extract training and test data based on indices
-        X_train, X_test = X2.iloc[train_ix], X2.iloc[test_ix]
-        y_train, y_test = y2.iloc[train_ix], y2.iloc[test_ix]
+#   for train_ix, test_ix in cv.split(X2):
+#         # Extract training and test data based on indices
+#         X_train, X_test = X2.iloc[train_ix], X2.iloc[test_ix]
+#         y_train, y_test = y2.iloc[train_ix], y2.iloc[test_ix]
         
-        # Fit model
-        model = RandomForestClassifier(random_state=42)
-        model.fit(X_train, y_train)
+#         # Fit model
+#         model = RandomForestClassifier(random_state=42)
+#         model.fit(X_train, y_train)
         
-        # Evaluate model
-        yhat = model.predict(X_test)
+#         # Evaluate model
+#         yhat = model.predict(X_test)
         
-        # Store true and predicted values
-        y_true.append(y_test.iloc[0])  # Assuming y_test is a Series
-        y_pred.append(yhat[0])
+#         # Store true and predicted values
+#         y_true.append(y_test.iloc[0])  # Assuming y_test is a Series
+#         y_pred.append(yhat[0])
 
-    # calculate accuracy 
-  acc = accuracy_score(y_true, y_pred)
-  print('Accuracy: %.3f' % acc)
+#     # calculate accuracy 
+#   acc = accuracy_score(y_true, y_pred)
+#   print('Accuracy: %.3f' % acc)
 
 # Part 3
 def leave_group_out_influence(X_train, y_train, X_test, y_test, model):
@@ -265,16 +193,11 @@ def leave_group_out_influence(X_train, y_train, X_test, y_test, model):
         group_indices = np.random.choice(len(X_train), group_size, replace=False)
         X_group = X_train.iloc[group_indices]
         y_group = y_train.iloc[group_indices]
-
-        print("x_train_left_out", X_group.shape)
-        print("y_train_left_out", y_group.shape)
         
         # Retrain the model without the left-out group
         X_train_left_out = X_train.drop(X_train.index[group_indices])
         y_train_left_out = y_train.drop(y_train.index[group_indices])
-        print("x_train_left_out", X_train_left_out.shape)
-        print("y_train_left_out", y_train_left_out.shape)
-
+        
         # Check if training set is empty
         if len(X_train_left_out) == 0:
             print(f"Skipping group size {size}: Empty training set after leaving out group")
@@ -331,19 +254,36 @@ def compute_shapley_value_single(observation, model, X_train, y_train, n_permuta
     feature_indices = np.arange(len(observation))
     perms = permutations(feature_indices)
     
+    # Limit the number of permutations to n_permutations
+    perms = itertools.islice(perms, n_permutations)
+    
     # Compute marginal contribution for each permutation
     for perm in perms:
         marginal_contributions = []
-        for i in range(0, len(perm)):
-            subset = perm[:i]
-            obs_subset = observation.copy()
-            obs_subset[subset] = 0  # Issue might be here
-            
-            pred_subset = model.predict_proba([obs_subset])[0]  # Error occurs here
-            pred = model.predict_proba([observation])[0]
-            marginal_contribution = np.abs(pred_subset - pred)
-            max_marginal_contribution = np.max(marginal_contribution)
-            marginal_contributions.append(max_marginal_contribution)
+        obs_subset = observation.copy()  # Create a copy of the observation
+        
+        # Drop corresponding columns from the observation
+        obs_subset.drop(X_train.columns[list(perm)], inplace=True)
+        
+        # Check if any columns are left in X_train_subset
+        if len(X_train.columns) - len(perm) == 0:
+            continue
+        
+        # Store the columns before dropping any
+        original_columns = X_train.columns.tolist()
+        # Create a list of column indices to be dropped
+        columns_to_drop = [original_columns[idx] for idx in perm]
+        # Drop the subset of columns
+        X_train_subset = X_train.drop(columns=columns_to_drop)
+        
+        # Use X_train_subset and y_train to retrain the model for each subset
+        model.fit(X_train_subset, y_train)
+        
+        pred_subset = model.predict_proba([obs_subset])[0]
+        pred = model.predict_proba([observation])[0]
+        marginal_contribution = np.abs(pred_subset - pred)
+        max_marginal_contribution = np.max(marginal_contribution)
+        marginal_contributions.append(max_marginal_contribution)
 
         shapley_value = np.mean(marginal_contributions)
 
@@ -354,22 +294,16 @@ def compute_shapley_value_single(observation, model, X_train, y_train, n_permuta
     
     return shapley_values
 
-
 # Function to compute Shapley values for all observations in the training data
-def compute_shapley_values(X_train, model, n_permutations=10):
+def compute_shapley_values(X_train, y_train, model, n_permutations=10):
     shapley_values_all = []
-
     for i in range(len(X_train)):
         observation = X_train.iloc[i]
-        print("line 376", len(observation))
-        print("line 378", X_train.shape )
-
         shapley_values = compute_shapley_value_single(observation, model, X_train, y_train, n_permutations)
         shapley_values_all.append(shapley_values)
     return np.array(shapley_values_all)
 
-print("line 378", X_train.shape)
-shapley_values_rf = compute_shapley_values(X_train, random_forest_model)
+shapley_values_rf = compute_shapley_values(X_train, y_train, random_forest_model)
 
 # Plot the distribution of Shapley values
 plt.figure(figsize=(10, 6))
