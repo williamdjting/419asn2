@@ -148,25 +148,25 @@ for i in range(10):
   # enumerate splits
   y_true, y_pred = list(), list()
 
-#   for train_ix, test_ix in cv.split(X2):
-#         # Extract training and test data based on indices
-#         X_train, X_test = X2.iloc[train_ix], X2.iloc[test_ix]
-#         y_train, y_test = y2.iloc[train_ix], y2.iloc[test_ix]
+  for train_ix, test_ix in cv.split(X2):
+        # Extract training and test data based on indices
+        X_train, X_test = X2.iloc[train_ix], X2.iloc[test_ix]
+        y_train, y_test = y2.iloc[train_ix], y2.iloc[test_ix]
         
-#         # Fit model
-#         model = RandomForestClassifier(random_state=42)
-#         model.fit(X_train, y_train)
+        # Fit model
+        model = RandomForestClassifier(random_state=42)
+        model.fit(X_train, y_train)
         
-#         # Evaluate model
-#         yhat = model.predict(X_test)
+        # Evaluate model
+        yhat = model.predict(X_test)
         
-#         # Store true and predicted values
-#         y_true.append(y_test.iloc[0])  # Assuming y_test is a Series
-#         y_pred.append(yhat[0])
+        # Store true and predicted values
+        y_true.append(y_test.iloc[0])  # Assuming y_test is a Series
+        y_pred.append(yhat[0])
 
-#     # calculate accuracy 
-#   acc = accuracy_score(y_true, y_pred)
-#   print('Accuracy: %.3f' % acc)
+    # calculate accuracy 
+  acc = accuracy_score(y_true, y_pred)
+  print('Accuracy: %.3f' % acc)
 
 # Part 3
 def leave_group_out_influence(X_train, y_train, X_test, y_test, model):
